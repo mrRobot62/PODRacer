@@ -57,7 +57,6 @@ bool SurfaceDistance::begin(Receiver *receiver) {
 
   skfToF = new SimpleKalmanFilter(skfeMea, skfeEst, skfE);
 
-  /*
   _lidar = new TFMPlus();
   if (_lidar == nullptr) {
     logger->error("Lidar not initialized", _tname);
@@ -69,14 +68,12 @@ bool SurfaceDistance::begin(Receiver *receiver) {
     setError(getID(), 0x05);
     return false;
   }
-*/
 
   /*
     RX1_PIN and TX1_PIN occupy the IO ports for the internal flash memory. 
     When flashing the program, GPIO2 must not be connected to the TFMini.
   */
 
-/*
   _bus->begin(BAUD_115200, SERIAL_8N1, RX1_PIN, TX1_PIN);
   if (_lidar->begin(_bus) == false) {
     logger->error("Initialization lidar sensor failed", _tname);
@@ -89,9 +86,7 @@ bool SurfaceDistance::begin(Receiver *receiver) {
   logger->info(buffer, _tname);
 #endif
 
-  
 
-*/
   // Start continuous back-to-back mode (take readings as
   // fast as possible).  To use continuous timed mode
   // instead, provide a desired inter-measurement period in
@@ -188,6 +183,17 @@ void SurfaceDistance::update(void) {
       logger->info(buffer, _tname);
       #endif
     #endif
+
+    if (_lidar->getData(tfDist, tfFlux, tfTemp))  // Get data from the device.
+      {
+        // channelData = _recv->getData(TASK_SURFACEDISTANCE);
+    #if defined(LOG_TASK_SURFACE_LIDAR)
+        //sprintf(buffer, "Dist(TFMini):%04icm, Flux:%05i", tfDist, tfFlux);
+        sprintf(buffer, "Dist(TFMini):%04icm, Temp:%2i", tfDist, tfTemp);
+        logger->info(buffer, _tname);
+    #endif
+      }
+      
     #if defined(IGNORE_SDIST_OUTPUT_TOF) 
       resetUpdateFlag();
     #endif
